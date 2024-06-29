@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar Registro{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Eliminar Registro</h1>
+    <p>¿Estás seguro de que deseas eliminar el registro de {{ registro.paciente }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{% url 'registros' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
