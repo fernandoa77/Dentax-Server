@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Sucursales{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Sucursales</h1>
+    <div style="overflow-y: auto; max-height: 400px;">
+        <table class="table table-striped table-bordered" id="sucursalesTable">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Inventario</th>
+                    <th>Timestamp Bajada</th>
+                    <th>Timestamp Subida</th>
+                    <th>Prefijo</th>
+                    <th>Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in sucursales_records %}
+                <tr>
+                    <td>{{ record.inventario }}</td>
+                    <td>{{ record.timestamp_bajada }}</td>
+                    <td>{{ record.timestamp_subida }}</td>
+                    <td>{{ record.prefijo }}</td>
+                    <td>{{ record.nombre }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

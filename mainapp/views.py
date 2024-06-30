@@ -36,6 +36,51 @@ def create_history_and_pendientes(instance, action, user):
     Historial.objects.create(**common_data)
 
 
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            return render(request, 'login.html', {'error': 'Invalid username or password'})
+    else:
+        return render(request, 'login.html')
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+#BASE VIEWS
+
+
+#dash board views
+@login_required
+def dashboard(request):
+    return render(request, 'dashboard.html')
+
+#sucursales views
+@login_required
+def sucursales(request):
+    return render(request, 'sucursales.html')
+
+#comparar views?
+@login_required
+def comparar(request):
+    return render(request, 'comparar.html')
+
+#registros views
+@login_required
+def registros(request):
+    registros_pacientes = RegistroPacienteCdb.objects.all()
+    return render(request, 'registros/registros.html', {'registros_pacientes': registros_pacientes})
+
 @login_required
 def agregar_registro(request):
     if request.method == 'POST':
@@ -73,6 +118,12 @@ def eliminar_registro(request, folio):
     return render(request, 'eliminar_registro.html', {'registro': registro})
 
 
+#doctores views
+@login_required
+def doctores(request):
+    doctores_list = DoctorCdb.objects.all()
+    return render(request, 'doctores/doctores.html', {'doctores_list': doctores_list})
+
 @login_required
 def agregar_doctor(request):
     if request.method == 'POST':
@@ -83,7 +134,7 @@ def agregar_doctor(request):
             return redirect('doctores')
     else:
         form = DoctorForm()
-    return render(request, 'agregar_doctor.html', {'form': form})
+    return render(request, 'doctores/agregar_doctor.html', {'form': form})
 
 
 @login_required
@@ -97,7 +148,7 @@ def editar_doctor(request, id):
             return redirect('doctores')
     else:
         form = DoctorForm(instance=doctor)
-    return render(request, 'editar_doctor.html', {'form': form})
+    return render(request, 'doctores/editar_doctor.html', {'form': form})
 
 
 @login_required
@@ -107,76 +158,40 @@ def eliminar_doctor(request, id):
         create_history_and_pendientes(doctor, 'ELIMINAR', request.user)
         doctor.delete()
         return redirect('doctores')
-    return render(request, 'eliminar_doctor.html', {'doctor': doctor})
+    return render(request, 'doctores/eliminar_doctor.html', {'doctor': doctor})
 
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-        else:
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
-    else:
-        return render(request, 'login.html')
 
-
+#admin views
 @login_required
-def logout_view(request):
-    logout(request)
-    return redirect('login')
-
-
-@login_required
-def dashboard(request):
-    return render(request, 'dashboard.html')
-
-
-@login_required
-def sucursales(request):
-    return render(request, 'sucursales.html')
-
-
-@login_required
-def comparar(request):
-    return render(request, 'comparar.html')
-
-
-@login_required
-def registros(request):
-    registros_pacientes = RegistroPacienteCdb.objects.all()
-    return render(request, 'registros.html', {'registros_pacientes': registros_pacientes})
-
-
-@login_required
-def doctores(request):
-    doctores_list = DoctorCdb.objects.all()
-    return render(request, 'doctores.html', {'doctores_list': doctores_list})
-
-
-@login_required
-def admin_tables(request):
+def pendientes_bajada(request):
+    
     pendientes_records = PendientesBajada.objects.all()
-    historial_records = Historial.objects.all()
-    sucursales_records = SucursalesCdb.objects.all()
-
-    pendientes_columns = ['id', 'clave', 'tipo',
-                          'autor', 'origen', 'timestamp', 'accion']
-    historial_columns = ['id', 'clave', 'tipo',
-                         'autor', 'origen', 'timestamp', 'accion']
-    sucursales_columns = [
-        'id', 'inventario', 'timestamp_bajada', 'timestamp_subida', 'prefijo', 'nombre']
-
+    pendientes_columns = ['id', 'clave', 'tipo', 'autor', 'origen', 'timestamp', 'accion']
     context = {
         'pendientes_records': pendientes_records,
-        'historial_records': historial_records,
-        'sucursales_records': sucursales_records,
-        'pendientes_columns': pendientes_columns,
-        'historial_columns': historial_columns,
-        'sucursales_columns': sucursales_columns,
+        'pendientes_columns': pendientes_columns
     }
+    return render(request, 'admin/pendientes_bajada.html', context)
 
-    return render(request, 'admin.html', context)
+
+@login_required
+def historial(request):
+    historial_records = Historial.objects.all()
+    historial_columns = ['id', 'clave', 'tipo', 'autor', 'origen', 'timestamp', 'accion']
+    context = {
+        'historial_records': historial_records,
+        'historial_columns': historial_columns
+    }
+    return render(request, 'admin/historial.html', context)
+
+
+@login_required
+def sucursales_admin(request):
+    sucursales_records = SucursalesCdb.objects.all()
+    sucursales_columns = ['id', 'inventario', 'timestamp_bajada', 'timestamp_subida', 'prefijo', 'nombre']
+    context = {
+        'sucursales_records': sucursales_records,
+        'sucursales_columns': sucursales_columns
+    }
+    return render(request, 'admin/sucursales_admin.html', context)

@@ -1,117 +1,113 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}Mi Aplicación{% endblock %}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
         body {
             font-family: Arial, sans-serif;
         }
 
         .navbar {
-            overflow: hidden;
             background-color: #333;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
         }
 
-        .navbar a {
-            float: left;
-            display: block;
+        .navbar .nav-link,
+        .navbar-brand {
+            color: #f2f2f2 !important;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar-brand:hover {
+            color: #ddd !important;
+        }
+
+        .dropdown-menu {
+            background-color: #333;
+        }
+
+        .dropdown-menu .dropdown-item {
             color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
         }
 
-        .navbar a:hover {
+        .dropdown-menu .dropdown-item:hover {
             background-color: #ddd;
             color: black;
-        }
-
-        .navbar .icon {
-            display: none;
         }
 
         .content {
             padding: 60px 20px;
         }
 
-        @media screen and (max-width: 600px) {
-            .navbar a:not(:first-child) {
-                display: none;
-            }
-
-            .navbar a.icon {
-                float: right;
-                display: block;
-            }
-        }
-
-        @media screen and (max-width: 600px) {
-            .navbar.responsive {
-                position: relative;
-            }
-
-            .navbar.responsive .icon {
-                position: absolute;
-                right: 0;
-                top: 0;
-            }
-
-            .navbar.responsive a {
-                float: none;
-                display: block;
-                text-align: left;
-            }
+        .navbar-brand img {
+            max-height: 40px;
+            width: auto;
         }
     </style>
 </head>
 
 <body>
-
-    <div class="navbar" id="myNavbar">
-        <a href="{% url 'dashboard' %}">Dashboard</a>
-        <a href="{% url 'sucursales' %}">Sucursales</a>
-        <a href="{% url 'comparar' %}">Comparar</a>
-        <a href="{% url 'registros' %}">Registros</a>
-        <a href="{% url 'doctores' %}">Doctores</a>
-        <a href="{% url 'admin' %}">Admin</a>
-        {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}">Cerrar Sesión</a>
-        {% else %}
-        <a href="{% url 'login' %}">Iniciar Sesión</a>
-        {% endif %}
-        <a href="javascript:void(0);" class="icon" onclick="toggleNavbar()">
-            <i class="fa fa-bars"></i>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'images/logo_rect_dentax.png' %}" alt="Mi Aplicación">
         </a>
-    </div>
-
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'sucursales' %}">Sucursales</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'comparar' %}">Comparar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'registros' %}">Registros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'doctores' %}">Doctores</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Admin
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownAdmin">
+                        <a class="dropdown-item" href="{% url 'pendientes_bajada' %}">Pendientes Bajada</a>
+                        <a class="dropdown-item" href="{% url 'historial' %}">Historial</a>
+                        <a class="dropdown-item" href="{% url 'sucursales_admin' %}">Sucursales</a>
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
     <div class="content">
-        {% block content %}
-        {% endblock %}
+        <div class="container mt-4">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 
-    <script>
-        function toggleNavbar() {
-            var x = document.getElementById("myNavbar");
-            if (x.className === "navbar") {
-                x.className += " responsive";
-            } else {
-                x.className = "navbar";
-            }
-        }
-    </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 
 </html>
